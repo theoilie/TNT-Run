@@ -1,6 +1,7 @@
 package net.galaxygaming.tntrun.listener;
 
 import net.galaxygaming.dispenser.game.GameFixedMetadata;
+import net.galaxygaming.dispenser.game.GameMetadata;
 import net.galaxygaming.dispenser.game.GameState;
 import net.galaxygaming.dispenser.task.GameRunnable;
 import net.galaxygaming.tntrun.TNTRun;
@@ -29,13 +30,13 @@ public class Events implements Listener {
                     public void run() {
                         block.setType(Material.GLASS);
                     }
-                }.runTaskLater(15L); // 0.75 seconds
+                }.runTaskLater(10L); // 0.5 seconds
                 new GameRunnable() {
                 		@Override
                 		public void run() {
                 			block.setType(Material.AIR);
                 		}
-                }.runTaskLater(30L); // 1.5 seconds
+                }.runTaskLater(20L); // 1 second
             }
         }
     }
@@ -47,11 +48,15 @@ public class Events implements Listener {
     		entity.setGameMode(GameMode.CREATIVE);
     		Player alive = null;
     		for (Player player : game.getPlayers()) {
-    			if (game.getMetadata(player, "spectator").asBoolean())
+    			GameMetadata data = game.getMetadata(player, "spectator");
+    			if (data == null)
+    				continue;
+    			if (data.asBoolean())
     				continue;
     			if (alive == null) {
     				alive = player;
-    				continue;
+    				if (game.getPlayers().length > 2)
+    					continue;
     			}
     			game.setWinner(alive.getDisplayName());
     			game.end();
