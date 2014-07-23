@@ -1,7 +1,5 @@
 package net.galaxygaming.tntrun;
 
-import java.util.Map;
-
 import net.galaxygaming.dispenser.game.GameBase;
 import net.galaxygaming.selection.Selection;
 import net.galaxygaming.util.LocationUtil;
@@ -21,7 +19,7 @@ public class TNTRun extends GameBase {
 	
 	private void setArena(Selection arena) {
 		this.arena = arena;
-		getConfig().set("arena", arena.serialize());
+		getConfig().set("arena", arena);
 	}
 
 	public Location getSpawn() {
@@ -40,7 +38,6 @@ public class TNTRun extends GameBase {
 		}
 		return false;
 	}
-
 	
 	@Override
 	public boolean setComponent(String componentName, Selection selection) {
@@ -51,50 +48,33 @@ public class TNTRun extends GameBase {
 		return false;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void onLoad() {
 		spawn = LocationUtil.deserializeLocation(getConfig().getString("spawn"));
-		arena = Selection.deserialize((Map<String, Object>) getConfig().get("arena"));
+		arena = (Selection) getConfig().get("arena");
 		addComponent("arena");
 		addComponent("spawn");
 	}
 
 	@Override
 	public void onStart() {
-		// TODO: Add 5 second grace before chaos commences
+		for (Player player : getPlayers()) {
+			player.teleport(spawn);
+		}
 	}
 
 	@Override
 	public void onTick() {
-		// TODO: Handle deaths either in events or by checking something here? idk
+		super.onTick();
 	}
 
 	@Override
 	public void onEnd() {
-		// Check winner and do stuff
-	}
-
-	@Override
-	public void onPlayerLeave(Player player) {
-	    // TOOD: Remove any metadata that we added
-	    
-		super.onPlayerLeave(player);
-	}
-
-	@Override
-	public boolean isFinished() {
-	    // TODO: Check how many players left and decide whether game is finished
-	    
-		return super.isFinished();
+		super.onEnd();
 	}
 
 	@Override
 	public boolean isSetup() {
 		return spawn != null && arena != null;
-	}
-	
-	public boolean isPlayerSpectating(Player player) {
-	    return getMetadata(player, "spectator").asBoolean();
 	}
 }
