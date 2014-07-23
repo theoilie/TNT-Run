@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 public class TNTRun extends GameBase {
 	private Location spawn;
 	private Selection arena;
+	private String winner;
 	
 	private void setSpawn(Location spawn) {
 		this.spawn = spawn;
@@ -70,11 +71,19 @@ public class TNTRun extends GameBase {
 
 	@Override
 	public void onEnd() {
-		super.onEnd();
+		broadcast("&6" + winner + " &rhas won the game!");
 	}
 
 	@Override
 	public boolean isSetup() {
 		return spawn != null && arena != null;
+	}
+
+	public String getWinner() {
+		return winner;
+	}
+
+	public void setWinner(String winner) {
+		this.winner = winner;
 	}
 }
