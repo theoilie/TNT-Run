@@ -62,36 +62,39 @@ public class TNTRun extends GameBase {
 
 	@Override
 	public void onStart() {
-		super.onStart();
+		// TODO: Add 5 second grace before chaos commences
 	}
 
 	@Override
 	public void onTick() {
-		super.onTick();
+		// TODO: Handle deaths either in events or by checking something here? idk
 	}
 
 	@Override
 	public void onEnd() {
-		super.onEnd();
-	}
-
-	@Override
-	public void onPlayerJoin(Player player) {
-		super.onPlayerJoin(player);
+		// Check winner and do stuff
 	}
 
 	@Override
 	public void onPlayerLeave(Player player) {
+	    // TOOD: Remove any metadata that we added
+	    
 		super.onPlayerLeave(player);
 	}
 
 	@Override
 	public boolean isFinished() {
+	    // TODO: Check how many players left and decide whether game is finished
+	    
 		return super.isFinished();
 	}
 
 	@Override
 	public boolean isSetup() {
 		return spawn != null && arena != null;
+	}
+	
+	public boolean isPlayerSpectating(Player player) {
+	    return getMetadata(player, "spectator").asBoolean();
 	}
 }
