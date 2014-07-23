@@ -1,15 +1,15 @@
 package net.galaxygaming.tntrun.listener;
 
-import org.bukkit.block.Block;
-import org.bukkit.Material;
-import org.bukkit.event.Listener;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.PlayerMoveEvent;
-
+import net.galaxygaming.dispenser.game.GameState;
+import net.galaxygaming.dispenser.task.GameRunnable;
 import net.galaxygaming.tntrun.TNTRun;
 
-import net.galaxygaming.gamedispenser.game.GameState;
-import net.galaxygaming.gamedispenser.task.GameRunnable;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerMoveEvent;
+
 
 public class Events implements Listener {
 	
@@ -18,7 +18,7 @@ public class Events implements Listener {
         if (game.getState().ordinal() > GameState.ACTIVE.ordinal()) {
             final Block block = event.getPlayer().getLocation().subtract(0, 1, 0).getBlock();
             
-            if (!block.getMaterial().equals(Material.AIR)) {
+            if (!block.getType().equals(Material.AIR)) {
                 new GameRunnable() {
                     @Override
                     public void run() {
