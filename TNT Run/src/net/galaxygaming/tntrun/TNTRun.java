@@ -1,6 +1,7 @@
 package net.galaxygaming.tntrun;
 
 import net.galaxygaming.dispenser.game.GameBase;
+import net.galaxygaming.dispenser.team.Spectator;
 import net.galaxygaming.selection.Selection;
 import net.galaxygaming.util.LocationUtil;
 
@@ -11,6 +12,7 @@ public class TNTRun extends GameBase {
 	private Location spawn;
 	private Selection arena;
 	private String winner;
+	private Spectator spectatorTeam = new Spectator();
 	
 	private void setSpawn(Location spawn) {
 		this.spawn = spawn;
@@ -85,5 +87,14 @@ public class TNTRun extends GameBase {
 
 	public void setWinner(String winner) {
 		this.winner = winner;
+	}
+	
+	public Spectator getSpectatorTeam() {
+		return spectatorTeam;
+	}
+	
+	public String getRemainingMessage() {
+		int length = getPlayers().length;
+		return "(&6" + (length - spectatorTeam.getSize()) + "&r/&6" + length + "&r) remaining.";
 	}
 }
