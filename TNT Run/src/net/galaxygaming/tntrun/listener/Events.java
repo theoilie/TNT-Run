@@ -49,17 +49,16 @@ public class Events implements Listener {
     		Player alive = null;
     		for (Player player : game.getPlayers()) {
     			GameMetadata data = game.getMetadata(player, "spectator");
-    			if (data == null)
+    			if (data == null || !data.asBoolean()) {
+        			if (alive == null) {
+        				alive = player;
+        				if (game.getPlayers().length > 2)
+        					continue;
+        				game.setWinner(alive.getDisplayName());
+        				game.end();
+        			}
     				continue;
-    			if (data.asBoolean())
-    				continue;
-    			if (alive == null) {
-    				alive = player;
-    				if (game.getPlayers().length > 2)
-    					continue;
     			}
-    			game.setWinner(alive.getDisplayName());
-    			game.end();
     		}
     }
 }
