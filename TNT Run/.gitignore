@@ -1,2 +1,5 @@
 /bin
 /.settings
+/jar.jardesc
+/.classpath
+/.project
