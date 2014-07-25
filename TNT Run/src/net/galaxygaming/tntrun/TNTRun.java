@@ -2,6 +2,7 @@ package net.galaxygaming.tntrun;
 
 import net.galaxygaming.dispenser.game.GameBase;
 import net.galaxygaming.dispenser.team.Spectator;
+import net.galaxygaming.selection.RegenableSelection;
 import net.galaxygaming.selection.Selection;
 import net.galaxygaming.util.LocationUtil;
 
@@ -13,7 +14,7 @@ import org.bukkit.scoreboard.DisplaySlot;
 
 public class TNTRun extends GameBase {
 	private Location spawn;
-	private Selection arena;
+	private RegenableSelection arena;
 	private String winner;
 	private String joinMessage, remainingMessage;
 	private Spectator spectatorTeam;
@@ -25,16 +26,14 @@ public class TNTRun extends GameBase {
 	}
 	
 	private void setArena(Selection arena) {
-		this.arena = arena;
-		getConfig().set("arena", arena);
-		save();
+		this.arena = new RegenableSelection(this, "arena", arena);
 	}
 
 	public Location getSpawn() {
 		return spawn;
 	}
 	
-	public Selection getArena() {
+	public RegenableSelection getArena() {
 		return arena;
 	}
 	
@@ -59,7 +58,7 @@ public class TNTRun extends GameBase {
 	@Override
 	public void onLoad() {
 		spawn = LocationUtil.deserializeLocation(getConfig().getString("spawn"));
-		arena = (Selection) getConfig().get("arena");
+		arena = RegenableSelection.load(this, "arena");
 		
 		addComponent("arena");
 		addComponent("spawn");
@@ -100,6 +99,7 @@ public class TNTRun extends GameBase {
 	@Override
 	public void onEnd() {
 		broadcast("&6" + winner + " &rhas won the game!");
+		arena.regen();
 	}
 
 	@Override
