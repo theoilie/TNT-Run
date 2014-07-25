@@ -24,7 +24,9 @@ public class Events implements Listener {
 		if (game.getState().ordinal() == GameState.ACTIVE.ordinal()) {
 			final Block block = event.getPlayer().getLocation().getBlock()
 					.getRelative(BlockFace.DOWN);
-			if (block.getType() == Material.AIR)
+			if (block.getType() == Material.AIR || block.getType() == Material.GLASS)
+				return;
+			if (!game.getArena().getSelection().isIn(block.getLocation())) // No griefing outside of reset area
 				return;
 			
 			new GameRunnable() {
