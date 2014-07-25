@@ -16,7 +16,6 @@ public class TNTRun extends GameBase {
 	private Location spawn;
 	private RegenableSelection arena;
 	private String winner;
-	private String joinMessage, remainingMessage;
 	private Spectator spectatorTeam;
 	
 	private void setSpawn(Location spawn) {
@@ -71,18 +70,6 @@ public class TNTRun extends GameBase {
 		objective.getScore(ChatColor.translateAlternateColorCodes('&', "&6&lPlayers")).setScore(2);
 		lastPlayerCount = getPlayers().length;
 		objective.getScore(lastPlayerCount + "").setScore(1);
-		
-		int length = getPlayers().length;
-		getConfig().addDefault("remaining message", 
-			"(&6" + (length - spectatorTeam.getSize()) 
-			+ "&r/&6" + length + "&r)");
-		getConfig().addDefault(
-				"join message", "(&6" + getPlayers().length
-					+ "&r/&6" + getConfig().getInt("maximum players")
-					+ "&r)");
-		save();
-		joinMessage = getConfig().getString("join message");
-		remainingMessage = getConfig().getString("remaining message");
 	}
 
 	@Override
@@ -118,24 +105,9 @@ public class TNTRun extends GameBase {
 	public Spectator getSpectatorTeam() {
 		return spectatorTeam;
 	}
-	
-	public String getRemainingMessage() {
-		return remainingMessage;
-	}
-	
-	public String getJoinMessage() {
-		return joinMessage;
-	}
-
-	@Override
-	public void onPlayerJoin(Player player) {
-		broadcast("&6" + player.getDisplayName() 
-			+ "&rhas joined." + joinMessage);
-	}
 
 	@Override
 	public void onPlayerLeave(Player player) {
-		broadcast("&6" + player.getDisplayName() 
-			+ "&rhas joined." + joinMessage);
+		spectatorTeam.remove(player);
 	}
 }

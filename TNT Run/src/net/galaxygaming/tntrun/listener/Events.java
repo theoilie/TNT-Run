@@ -4,8 +4,8 @@ import net.galaxygaming.dispenser.game.GameState;
 import net.galaxygaming.dispenser.task.GameRunnable;
 import net.galaxygaming.dispenser.team.Team;
 import net.galaxygaming.tntrun.TNTRun;
+import net.galaxygaming.util.FormatUtil;
 
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -46,25 +46,25 @@ public class Events implements Listener {
     
     @EventHandler
     public void onPlayerDeath(final PlayerDeathEvent event, final TNTRun game) {
-    		Player entity = event.getEntity();
-    		Team spectatorTeam = game.getSpectatorTeam();
-    		spectatorTeam.add(entity);
-    		int length = game.getPlayers().length;
-    		event.setDeathMessage(ChatColor.translateAlternateColorCodes
-    				('&', "&4" + entity.getDisplayName() + " &rhas fallen out. "
-    						+ game.getRemainingMessage()));
-    		entity.setGameMode(GameMode.CREATIVE);
-    		Player alive = null;
-    		for (Player player : game.getPlayers()) {
-    			if (spectatorTeam.isOnTeam(player))
-    				continue;
-    			if (alive == null) {
-    				alive = player;
-    				if (length > 2)
-    					continue;
-    			}
-    			game.setWinner(alive.getDisplayName());
-    			game.end();
-    		}
+		Player entity = event.getEntity();
+		Team spectatorTeam = game.getSpectatorTeam();
+		spectatorTeam.add(entity);
+		int length = game.getPlayers().length;
+		event.setDeathMessage(FormatUtil.format("&4" + entity.getDisplayName() + " &ehas fallen out. "
+						+ FormatUtil.format(game.getType().getMessages().getMessage("game.playerCount"), 
+								game.getPlayers().length - spectatorTeam.getSize())));
+		entity.setGameMode(GameMode.CREATIVE);
+		Player alive = null;
+		for (Player player : game.getPlayers()) {
+			if (spectatorTeam.isOnTeam(player))
+				continue;
+			if (alive == null) {
+				alive = player;
+				if (length > 2)
+					continue;
+			}
+			game.setWinner(alive.getDisplayName());
+			game.end();
+		}
     }
 }
