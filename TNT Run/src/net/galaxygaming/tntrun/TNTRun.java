@@ -1,6 +1,7 @@
 package net.galaxygaming.tntrun;
 
 import net.galaxygaming.dispenser.game.GameBase;
+import net.galaxygaming.dispenser.task.GameRunnable;
 import net.galaxygaming.dispenser.team.Spectator;
 import net.galaxygaming.selection.RegenableSelection;
 import net.galaxygaming.selection.Selection;
@@ -86,7 +87,12 @@ public class TNTRun extends GameBase {
 	@Override
 	public void onEnd() {
 		broadcast("&6" + winner + " &rhas won the game!");
-		arena.regen();
+		new GameRunnable() {
+			@Override
+			public void run() {
+				arena.regen();
+			}
+		}.runTask();
 	}
 
 	@Override
