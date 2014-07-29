@@ -68,6 +68,7 @@ public class TNTRun extends GameBase {
 
 	@Override
 	public void onStart() {
+		spectatorTeam = new Spectator();
 		for (Player player : getPlayers()) {
 			player.teleport(spawn);
 			player.setScoreboard(board);

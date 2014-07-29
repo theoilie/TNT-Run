@@ -15,6 +15,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 
 public class Events implements Listener {
@@ -50,23 +51,32 @@ public class Events implements Listener {
 		Team spectatorTeam = game.getSpectatorTeam();
 		spectatorTeam.add(entity);
 		int length = game.getPlayers().length;
-		game.broadcast("&4" + entity.getDisplayName() + " &ehas fallen out. "
-						+ FormatUtil.format(game.getType().getMessages().getMessage("game.playerCount"), 
-								game.getPlayers().length - spectatorTeam.getSize()));
+		int players = length - spectatorTeam.getSize();
+		game.broadcast("&4"
+				+ entity.getDisplayName()
+				+ " &ehas fallen out. "
+				+ FormatUtil.format(
+						game.getType().getMessages()
+								.getMessage("game.playerCount"), players, length));
 		event.setDeathMessage("");
 		event.getDrops().clear();
-		entity.setGameMode(GameMode.CREATIVE);
-		Player alive = null;
-		for (Player player : game.getPlayers()) {
-			if (spectatorTeam.isOnTeam(player))
-				continue;
-			if (alive == null) {
-				alive = player;
-				if (length > 2)
-					continue;
-			}
-			game.setWinner(alive.getDisplayName());
-			game.end();
+		
+		if (players == 1) {
+			setWinner(game);
 		}
+    }
+    
+    @EventHandler
+    public void onPlayerRespawn(final PlayerRespawnEvent event, final TNTRun game) {
+    		event.getPlayer().setGameMode(GameMode.CREATIVE);
+    }
+    
+    private void setWinner(TNTRun game) {
+    		for (Player player : game.getPlayers()) {
+    			if (game.getSpectatorTeam().isOnTeam(player))
+    				continue;
+    			game.setWinner(player.getDisplayName());
+    			game.end();
+    		}
     }
 }
