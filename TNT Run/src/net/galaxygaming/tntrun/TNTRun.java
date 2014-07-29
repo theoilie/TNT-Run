@@ -11,7 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Score;
 
 public class TNTRun extends GameBase {
 	private Location spawn;
@@ -63,20 +63,14 @@ public class TNTRun extends GameBase {
 		addComponent("arena");
 		addComponent("spawn");
 		
-		spectatorTeam = new Spectator();
-		board = Bukkit.getScoreboardManager().getNewScoreboard();
-		objective = board.registerNewObjective
-			(ChatColor.translateAlternateColorCodes('&', "&4TNT &cRun"), "dummy");
-		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-		objective.getScore(ChatColor.translateAlternateColorCodes('&', "&6&lPlayers")).setScore(2);
-		lastPlayerCount = getPlayers().length;
-		objective.getScore(lastPlayerCount + "").setScore(1);
+		useScoreboardPlayers = true;
 	}
 
 	@Override
 	public void onStart() {
 		for (Player player : getPlayers()) {
 			player.teleport(spawn);
+			player.setScoreboard(board);
 		}
 	}
 
@@ -93,8 +87,29 @@ public class TNTRun extends GameBase {
 				arena.regen();
 			}
 		}.runTask();
+		
+		for (Player player : getPlayers()) {
+			player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+		}
 	}
 
+	@Override
+	public void updatePlayerBoard() {
+		if (playerTagScore > 0) {
+			Score score = objective.getScore(ChatColor
+					.translateAlternateColorCodes('&', "&6&lPlayers"));
+			if (score.getScore() != playerTagScore)
+				score.setScore(playerTagScore);
+		}
+
+		if (playerCounterScore > 0) {
+			board.resetScores(lastPlayerCount + "");
+			lastPlayerCount = getPlayers().length - spectatorTeam.getSize();
+			objective.getScore(lastPlayerCount + "").setScore(
+					playerCounterScore);
+		}
+	}
+	
 	@Override
 	public boolean isSetup() {
 		return spawn != null && arena != null;

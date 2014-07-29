@@ -50,9 +50,11 @@ public class Events implements Listener {
 		Team spectatorTeam = game.getSpectatorTeam();
 		spectatorTeam.add(entity);
 		int length = game.getPlayers().length;
-		event.setDeathMessage(FormatUtil.format("&4" + entity.getDisplayName() + " &ehas fallen out. "
+		game.broadcast("&4" + entity.getDisplayName() + " &ehas fallen out. "
 						+ FormatUtil.format(game.getType().getMessages().getMessage("game.playerCount"), 
-								game.getPlayers().length - spectatorTeam.getSize())));
+								game.getPlayers().length - spectatorTeam.getSize()));
+		event.setDeathMessage("");
+		event.getDrops().clear();
 		entity.setGameMode(GameMode.CREATIVE);
 		Player alive = null;
 		for (Player player : game.getPlayers()) {
