@@ -30,18 +30,8 @@ public class Events implements Listener {
 			if (!game.getArena().getSelection().isIn(block.getLocation())) // No griefing outside of reset area
 				return;
 			
-			new GameRunnable() {
-				@Override
-				public void run() {
-					block.setType(Material.GLASS);
-				}
-			}.runTaskLater(5L); // 0.25 seconds
-			new GameRunnable() {
-				@Override
-				public void run() {
-					block.setType(Material.AIR);
-				}
-			}.runTaskLater(10L); // 0.5 seconds
+			game.resetTime(event.getPlayer());
+			breakBlock(block);
 		}
 	}
     
@@ -78,5 +68,20 @@ public class Events implements Listener {
     			game.setWinner(player.getDisplayName());
     			game.end();
     		}
+    }
+    
+    private void breakBlock(final Block block) {
+		new GameRunnable() {
+			@Override
+			public void run() {
+				block.setType(Material.GLASS);
+			}
+		}.runTaskLater(5L); // 0.25 seconds
+		new GameRunnable() {
+			@Override
+			public void run() {
+				block.setType(Material.AIR);
+			}
+		}.runTaskLater(10L); // 0.5 seconds
     }
 }

@@ -1,5 +1,7 @@
 package net.galaxygaming.tntrun;
 
+import java.util.HashMap;
+
 import net.galaxygaming.dispenser.game.GameBase;
 import net.galaxygaming.dispenser.task.GameRunnable;
 import net.galaxygaming.dispenser.team.Spectator;
@@ -13,11 +15,14 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Score;
 
+import com.google.common.collect.Maps;
+
 public class TNTRun extends GameBase {
 	private Location spawn;
 	private RegenableSelection arena;
 	private String winner;
 	private Spectator spectatorTeam;
+	private HashMap<Player, Integer> times = Maps.newHashMap();
 	
 	private void setSpawn(Location spawn) {
 		this.spawn = spawn;
@@ -76,7 +81,22 @@ public class TNTRun extends GameBase {
 	}
 
 	@Override
-	public void onTick() {
+	public void onSecond() {
+		for (Player player : getPlayers()) {
+			int time = getTime(player);
+			time++;
+			if (time == 2) {
+				player.sendMessage(getType().getMessages().getMessage("game.warning"));
+				resetTime(player);
+				times.put(player, time);
+			} else if (time == 5) {
+				player.setHealth(0);
+				resetTime(player);
+			} else {
+				resetTime(player);
+				times.put(player, time);
+			}
+		}
 	}
 
 	@Override
@@ -131,5 +151,19 @@ public class TNTRun extends GameBase {
 	@Override
 	public void onPlayerLeave(Player player) {
 		spectatorTeam.remove(player);
+	}
+	
+	public int getTime(Player player) {
+		if (times.containsKey(player))
+			return times.get(player);
+		else {
+			times.put(player, 0);
+			return 0;
+		}
+	}
+	
+	public void resetTime(Player player) {
+		if (times.containsKey(player))
+			times.remove(player);
 	}
 }
