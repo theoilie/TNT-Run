@@ -3,6 +3,7 @@ package net.galaxygaming.tntrun;
 import java.util.HashMap;
 
 import net.galaxygaming.dispenser.game.GameBase;
+import net.galaxygaming.dispenser.game.GameState;
 import net.galaxygaming.dispenser.task.GameRunnable;
 import net.galaxygaming.dispenser.team.Spectator;
 import net.galaxygaming.selection.RegenableSelection;
@@ -67,13 +68,14 @@ public class TNTRun extends GameBase {
 		
 		addComponent("arena");
 		addComponent("spawn");
-		
-		useScoreboardPlayers = true;
 	}
 
 	@Override
 	public void onStart() {
 		spectatorTeam = new Spectator();
+		useScoreboardPlayers = true;
+		updateScoreboard();
+		
 		for (Player player : getPlayers()) {
 			player.teleport(spawn);
 			player.setScoreboard(board);
@@ -82,11 +84,16 @@ public class TNTRun extends GameBase {
 
 	@Override
 	public void onSecond() {
+		if (getState().ordinal() != GameState.ACTIVE.ordinal())
+			return;
 		for (Player player : getPlayers()) {
+			if (spectatorTeam.isOnTeam(player))
+				continue;
 			int time = getTime(player);
 			time++;
 			if (time == 2) {
-				player.sendMessage(getType().getMessages().getMessage("game.warning"));
+				player.sendMessage(ChatColor.translateAlternateColorCodes
+					('&', getType().getMessages().getMessage("game.warning")));
 				resetTime(player);
 				times.put(player, time);
 			} else if (time == 5) {
@@ -151,6 +158,7 @@ public class TNTRun extends GameBase {
 	@Override
 	public void onPlayerLeave(Player player) {
 		spectatorTeam.remove(player);
+		player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
 	}
 	
 	public int getTime(Player player) {
