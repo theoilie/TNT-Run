@@ -12,6 +12,7 @@ import net.galaxygaming.util.LocationUtil;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Score;
@@ -68,17 +69,21 @@ public class TNTRun extends GameBase {
 		
 		addComponent("arena");
 		addComponent("spawn");
+		
+		spectatorTeam = new Spectator();
+		
+		useScoreboardPlayers = true;
+		playerTagScore = 2;
+		playerCounterScore = 1;
 	}
 
 	@Override
-	public void onStart() {
-		spectatorTeam = new Spectator();
-		useScoreboardPlayers = true;
-		updateScoreboard();
-		
+	public void onStart() {		
 		for (Player player : getPlayers()) {
 			player.teleport(spawn);
 			player.setScoreboard(board);
+			if (player.getGameMode() != GameMode.SURVIVAL)
+				player.setGameMode(GameMode.SURVIVAL);
 		}
 	}
 
@@ -86,23 +91,11 @@ public class TNTRun extends GameBase {
 	public void onSecond() {
 		if (getState().ordinal() != GameState.ACTIVE.ordinal())
 			return;
+		
 		for (Player player : getPlayers()) {
 			if (spectatorTeam.isOnTeam(player))
 				continue;
-			int time = getTime(player);
-			time++;
-			if (time == 2) {
-				player.sendMessage(ChatColor.translateAlternateColorCodes
-					('&', getType().getMessages().getMessage("game.warning")));
-				resetTime(player);
-				times.put(player, time);
-			} else if (time == 5) {
-				player.setHealth(0);
-				resetTime(player);
-			} else {
-				resetTime(player);
-				times.put(player, time);
-			}
+			checkTime(player);
 		}
 	}
 
@@ -173,5 +166,22 @@ public class TNTRun extends GameBase {
 	public void resetTime(Player player) {
 		if (times.containsKey(player))
 			times.remove(player);
+	}
+	
+	private void checkTime(Player player) {
+		int time = getTime(player);
+		time++;
+		if (time == 2) {
+			player.sendMessage(ChatColor.translateAlternateColorCodes
+				('&', getType().getMessages().getMessage("game.warning")));
+			resetTime(player);
+			times.put(player, time);
+		} else if (time == 5) {
+			player.setHealth(0);
+			resetTime(player);
+		} else {
+			resetTime(player);
+			times.put(player, time);
+		}
 	}
 }
