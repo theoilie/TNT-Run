@@ -1,12 +1,10 @@
 package net.galaxygaming.tntrun;
 
 import net.galaxygaming.dispenser.game.GameBase;
+import net.galaxygaming.dispenser.game.component.Component;
 import net.galaxygaming.dispenser.task.GameRunnable;
 import net.galaxygaming.dispenser.team.Spectator;
 import net.galaxygaming.selection.RegenableSelection;
-import net.galaxygaming.selection.Selection;
-import net.galaxygaming.util.LocationUtil;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -14,20 +12,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Score;
 
 public class TNTRun extends GameBase {
-	private Location spawn;
-	private RegenableSelection arena;
+	private @Component Location spawn;
+	private @Component RegenableSelection arena;
 	private String winner;
 	private Spectator spectatorTeam;
-	
-	private void setSpawn(Location spawn) {
-		this.spawn = spawn;
-		getConfig().set("spawn", LocationUtil.serializeLocation(spawn));
-		save();
-	}
-	
-	private void setArena(Selection arena) {
-		this.arena = new RegenableSelection(this, "arena", arena);
-	}
 
 	public Location getSpawn() {
 		return spawn;
@@ -36,33 +24,9 @@ public class TNTRun extends GameBase {
 	public RegenableSelection getArena() {
 		return arena;
 	}
-	
-	@Override
-	public boolean setComponent(String componentName, Location location) {
-		if (componentName.equalsIgnoreCase("spawn")) {
-			setSpawn(location);
-			return true;
-		}
-		return false;
-	}
-	
-	@Override
-	public boolean setComponent(String componentName, Selection selection) {
-		if (componentName.equalsIgnoreCase("arena")) {
-			setArena(selection);
-			return true;
-		}
-		return false;
-	}
 
 	@Override
-	public void onLoad() {
-		spawn = LocationUtil.deserializeLocation(getConfig().getString("spawn"));
-		arena = RegenableSelection.load(this, "arena");
-		
-		addComponent("arena");
-		addComponent("spawn");
-		
+	public void onLoad() {				
 		useScoreboardPlayers = true;
 	}
 
@@ -77,6 +41,7 @@ public class TNTRun extends GameBase {
 
 	@Override
 	public void onTick() {
+		
 	}
 
 	@Override
@@ -109,11 +74,6 @@ public class TNTRun extends GameBase {
 			objective.getScore(lastPlayerCount + "").setScore(
 					playerCounterScore);
 		}
-	}
-	
-	@Override
-	public boolean isSetup() {
-		return spawn != null && arena != null;
 	}
 
 	public String getWinner() {
