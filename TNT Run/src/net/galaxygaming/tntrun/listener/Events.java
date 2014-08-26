@@ -23,25 +23,14 @@ public class Events implements Listener {
     @EventHandler
 	public void onPlayerMove(final PlayerMoveEvent event, final TNTRun game) {
 		if (game.getState().ordinal() == GameState.ACTIVE.ordinal()) {
-			final Block block = event.getPlayer().getLocation().getBlock()
-					.getRelative(BlockFace.DOWN);
+			final Block block = event.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN);
 			if (block.getType() == Material.AIR || block.getType() == Material.GLASS)
 				return;
 			if (!game.getArena().getSelection().isIn(block.getLocation())) // No griefing outside of reset area
 				return;
 			
-			new GameRunnable() {
-				@Override
-				public void run() {
-					block.setType(Material.GLASS);
-				}
-			}.runTaskLater(5L); // 0.25 seconds
-			new GameRunnable() {
-				@Override
-				public void run() {
-					block.setType(Material.AIR);
-				}
-			}.runTaskLater(10L); // 0.5 seconds
+			game.resetTime(event.getPlayer());
+			breakBlock(block);
 		}
 	}
     
@@ -52,12 +41,7 @@ public class Events implements Listener {
 		spectatorTeam.add(entity);
 		int length = game.getPlayers().length;
 		int players = length - spectatorTeam.getSize();
-		game.broadcast("&4"
-				+ entity.getDisplayName()
-				+ " &ehas fallen out. "
-				+ FormatUtil.format(
-						game.getType().getMessages()
-								.getMessage("game.playerCount"), players, length));
+		game.broadcast("&4" + entity.getDisplayName() + " &ehas fallen out. " + FormatUtil.format(game.getType().getMessages().getMessage("game.playerCount"), players, length));
 		event.setDeathMessage("");
 		event.getDrops().clear();
 		
@@ -78,5 +62,20 @@ public class Events implements Listener {
     			game.setWinner(player.getDisplayName());
     			game.end();
     		}
+    }
+    
+    private void breakBlock(final Block block) {
+		new GameRunnable() {
+			@Override
+			public void run() {
+				block.setType(Material.GLASS);
+			}
+		}.runTaskLater(5L); // 0.25 seconds
+		new GameRunnable() {
+			@Override
+			public void run() {
+				block.setType(Material.AIR);
+			}
+		}.runTaskLater(10L); // 0.5 seconds
     }
 }
