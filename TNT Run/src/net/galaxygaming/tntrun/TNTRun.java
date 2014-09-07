@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import net.galaxygaming.dispenser.game.GameBase;
 import net.galaxygaming.dispenser.game.GameState;
+import net.galaxygaming.dispenser.game.component.Component;
 import net.galaxygaming.dispenser.task.GameRunnable;
 import net.galaxygaming.dispenser.team.Spectator;
 import net.galaxygaming.selection.RegenableSelection;
@@ -20,21 +21,11 @@ import org.bukkit.scoreboard.Score;
 import com.google.common.collect.Maps;
 
 public class TNTRun extends GameBase {
-	private Location spawn;
-	private RegenableSelection arena;
 	private String winner;
 	private Spectator spectatorTeam;
 	private HashMap<Player, Integer> times = Maps.newHashMap();
-	
-	private void setSpawn(Location spawn) {
-		this.spawn = spawn;
-		getConfig().set("spawn", LocationUtil.serializeLocation(spawn));
-		save();
-	}
-	
-	private void setArena(Selection arena) {
-		this.arena = new RegenableSelection(this, "arena", arena);
-	}
+	private @Component RegenableSelection arena;
+	private @Component Location spawn;
 
 	public Location getSpawn() {
 		return spawn;
@@ -43,33 +34,9 @@ public class TNTRun extends GameBase {
 	public RegenableSelection getArena() {
 		return arena;
 	}
-	
-	@Override
-	public boolean setComponent(String componentName, Location location) {
-		if (componentName.equalsIgnoreCase("spawn")) {
-			setSpawn(location);
-			return true;
-		}
-		return false;
-	}
-	
-	@Override
-	public boolean setComponent(String componentName, Selection selection) {
-		if (componentName.equalsIgnoreCase("arena")) {
-			setArena(selection);
-			return true;
-		}
-		return false;
-	}
 
 	@Override
 	public void onLoad() {
-		spawn = LocationUtil.deserializeLocation(getConfig().getString("spawn"));
-		arena = RegenableSelection.load(this, "arena");
-		
-		addComponent("arena");
-		addComponent("spawn");
-		
 		spectatorTeam = new Spectator();
 		
 		useScoreboardPlayers = true;
@@ -126,14 +93,8 @@ public class TNTRun extends GameBase {
 		if (playerCounterScore > 0) {
 			board.resetScores(lastPlayerCount + "");
 			lastPlayerCount = getPlayers().length - spectatorTeam.getSize();
-			objective.getScore(lastPlayerCount + "").setScore(
-					playerCounterScore);
+			objective.getScore(lastPlayerCount + "").setScore(playerCounterScore);
 		}
-	}
-	
-	@Override
-	public boolean isSetup() {
-		return spawn != null && arena != null;
 	}
 
 	public String getWinner() {
