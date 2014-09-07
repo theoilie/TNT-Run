@@ -1,16 +1,13 @@
 package net.galaxygaming.tntrun;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import net.galaxygaming.dispenser.game.GameBase;
-import net.galaxygaming.dispenser.game.GameState;
 import net.galaxygaming.dispenser.game.component.Component;
+import net.galaxygaming.dispenser.game.GameState;
 import net.galaxygaming.dispenser.task.GameRunnable;
 import net.galaxygaming.dispenser.team.Spectator;
 import net.galaxygaming.selection.RegenableSelection;
-import net.galaxygaming.selection.Selection;
-import net.galaxygaming.util.LocationUtil;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -21,11 +18,11 @@ import org.bukkit.scoreboard.Score;
 import com.google.common.collect.Maps;
 
 public class TNTRun extends GameBase {
+	private @Component Location spawn;
+	private @Component RegenableSelection arena;
 	private String winner;
 	private Spectator spectatorTeam;
-	private HashMap<Player, Integer> times = Maps.newHashMap();
-	private @Component RegenableSelection arena;
-	private @Component Location spawn;
+	private Map<Player, Integer> times = Maps.newHashMap();
 
 	public Location getSpawn() {
 		return spawn;
@@ -36,7 +33,7 @@ public class TNTRun extends GameBase {
 	}
 
 	@Override
-	public void onLoad() {
+	public void onLoad() {					
 		spectatorTeam = new Spectator();
 		
 		useScoreboardPlayers = true;
@@ -84,8 +81,7 @@ public class TNTRun extends GameBase {
 	@Override
 	public void updatePlayerBoard() {
 		if (playerTagScore > 0) {
-			Score score = objective.getScore(ChatColor
-					.translateAlternateColorCodes('&', "&6&lPlayers"));
+			Score score = objective.getScore(ChatColor.translateAlternateColorCodes('&', "&6&lPlayers"));
 			if (score.getScore() != playerTagScore)
 				score.setScore(playerTagScore);
 		}
@@ -133,8 +129,7 @@ public class TNTRun extends GameBase {
 		int time = getTime(player);
 		time++;
 		if (time == 2) {
-			player.sendMessage(ChatColor.translateAlternateColorCodes
-				('&', getType().getMessages().getMessage("game.warning")));
+			player.sendMessage(ChatColor.translateAlternateColorCodes('&', getType().getMessages().getMessage("game.warning")));
 			resetTime(player);
 			times.put(player, time);
 		} else if (time == 5) {
