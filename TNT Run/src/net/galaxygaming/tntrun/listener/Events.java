@@ -17,9 +17,11 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
-
+// You do not need to register listeners because GameDispenser does that automatically.
 public class Events implements Listener {
 	
+	// Use the optional parameter TNTRun (or whatever the name of your main class is) in
+	// events to have them only be called when the player involved in the event is in your game.
     @EventHandler
 	public void onPlayerMove(final PlayerMoveEvent event, final TNTRun game) {
 		if (game.getState().ordinal() == GameState.ACTIVE.ordinal()) {
@@ -34,6 +36,7 @@ public class Events implements Listener {
 		}
 	}
     
+    // Announces a player's death and checks for a winner whenever a player in-game dies.
     @EventHandler
     public void onPlayerDeath(final PlayerDeathEvent event, final TNTRun game) {
 		Player entity = event.getEntity();
@@ -50,11 +53,14 @@ public class Events implements Listener {
 		}
     }
     
+    // Allows players who die to respawn in creative to spectate.
     @EventHandler
     public void onPlayerRespawn(final PlayerRespawnEvent event, final TNTRun game) {
     		event.getPlayer().setGameMode(GameMode.CREATIVE);
     }
     
+    // Checks if there's only one player left who is not spectating, sets
+    // that player as the winner, and ends the game.
     private void setWinner(TNTRun game) {
     		for (Player player : game.getPlayers()) {
     			if (game.getSpectatorTeam().isOnTeam(player))
@@ -64,6 +70,7 @@ public class Events implements Listener {
     		}
     }
     
+    // Turns a block into glass and then air after a delay.
     private void breakBlock(final Block block) {
 		new GameRunnable() {
 			@Override
